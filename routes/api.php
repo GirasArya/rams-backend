@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -47,18 +48,26 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Leger
     Route::post('leger/generate', [LegerController::class, 'generate']);
     Route::get('leger/get-data/{kode_leger}', [LegerController::class, 'getData']);
-    Route::get('leger/jalan-utama/{jalan_tol_id}/{leger_id_awal}/{leger_id_akhir}', [LegerController::class, 'getDataJalanUtama']); 
+    Route::get('leger/jalan-utama/{jalan_tol_id}/{leger_id_awal}/{leger_id_akhir}', [LegerController::class, 'getDataJalanUtama']);
     Route::get('leger/jalan-utama-all/{jalan_tol_id}', [LegerController::class, 'getAllDataJalanUtama']);
     Route::get('leger/ruas', [LegerController::class, 'getRuas']);
     Route::get('leger/segmen/{jalan_tol_id}', [LegerController::class, 'getSegmen']);
-    Route::get('leger/populate/{jalan_tol_id}', [LegerController::class,'populateLegerJalan']);
-    Route::get('leger/jalan-utama-map', [LegerController::class,'getLegerImage']);
+    Route::get('leger/populate/{jalan_tol_id}', [LegerController::class, 'populateLegerJalan']);
+    Route::get('leger/jalan-utama-map', [LegerController::class, 'getLegerImage']);
     Route::get('leger/jalan-utama-all-test/{jalan_tol_id}', [LegerController::class, 'getDataJalanUtamaAll']);
 });
 
 Route::get('/get-km-options', [FilterController::class, 'getKMOptions']);
 Route::post('/filter_assets', [FilterController::class, 'filterAssets']);
+Route::get('/get-km-iri-options', [FilterController::class, 'getIRIKMOptions']);
+Route::get('/get-bagian-iri-options', [FilterController::class, 'getIRIBagianJalan']);
+Route::get('/get-jalur-iri-options', [FilterController::class, 'getIRIJalur']);
 
+//Pemeliharaan
+Route::get('maintenance/', [MaintenanceController::class, 'getMaintenance']);
+Route::get('maintenance/{id}', [MaintenanceController::class, 'getMaintenanceById']);
+Route::post('maintenance/store', [MaintenanceController::class, 'store']);
+Route::delete('maintenance/data/{id}', [MaintenanceController::class, 'deleteMaintenance']);
 
 // Output Aset
 Route::get('data/aset/{type}', [OutputController::class, 'getAset']);
