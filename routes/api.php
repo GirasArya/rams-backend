@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetController;
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -59,18 +60,26 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 Route::get('/get-km-options', [FilterController::class, 'getKMOptions']);
 Route::post('/filter_assets', [FilterController::class, 'filterAssets']);
-Route::get('/get-km-iri-options', [FilterController::class, 'getIRIKMOptions']);
+Route::get('/get-km-iri-options/{nilai_iri}', [FilterController::class, 'getIRIKMOptions']);
 Route::get('/get-bagian-iri-options', [FilterController::class, 'getIRIBagianJalan']);
 Route::get('/get-jalur-iri-options', [FilterController::class, 'getIRIJalur']);
+Route::get('/get-ruas-jalan', [FilterController::class, 'getRuasJalan']);
 
 //Pemeliharaan
 Route::get('maintenance/', [MaintenanceController::class, 'getMaintenance']);
 Route::get('maintenance/{id}', [MaintenanceController::class, 'getMaintenanceById']);
+Route::get('maintenance/recent/data', [MaintenanceController::class, 'getRecentMaintenance']);
 Route::post('maintenance/store', [MaintenanceController::class, 'store']);
 Route::delete('maintenance/data/{id}', [MaintenanceController::class, 'deleteMaintenance']);
 
 // Output Aset
 Route::get('data/aset/{type}', [OutputController::class, 'getAset']);
 Route::get('data/segmen/{awal}/{akhir}', [OutputController::class, 'getSegmenLegerPolygonSelection']);
+
+//Manage Aset
+Route::get('manage/aset', [AssetController::class, 'getRecordAsset']);
+Route::post('manage/aset/store', [AssetController::class, 'storeAssetRecord']);
+Route::delete('manage/aset/delete', [AssetController::class, 'deleteAssetRecord']);
+Route::get('manage/aset/filter', [AssetController::class, 'getFilteredAssets']);
 
 Route::post('/login', [AuthController::class, 'login']);
