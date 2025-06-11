@@ -11,7 +11,7 @@ class GeoJSONResource extends JsonResource
     {
         return [
             "type" => "Feature",
-            "properties" => $this->makeHidden('geojson'),
+            "properties" => collect($this->resource)->except('geojson', 'geom')->toArray(),
             "geometry" => json_decode($this->geojson),
         ];
     }

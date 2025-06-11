@@ -78,8 +78,9 @@ Route::get('data/segmen/{awal}/{akhir}', [OutputController::class, 'getSegmenLeg
 
 //Manage Aset
 Route::get('manage/aset', [AssetController::class, 'getRecordAsset']);
+Route::get('manage/recent/aset', [AssetController::class, 'getRecentAsset']);
 Route::post('manage/aset/store', [AssetController::class, 'storeAssetRecord']);
-Route::delete('manage/aset/delete', [AssetController::class, 'deleteAssetRecord']);
+Route::delete('manage/aset/delete/{id}', [AssetController::class, 'deleteAssetRecord']);
 Route::get('manage/aset/filter', [AssetController::class, 'getFilteredAssets']);
 
 Route::post('/login', [AuthController::class, 'login']);

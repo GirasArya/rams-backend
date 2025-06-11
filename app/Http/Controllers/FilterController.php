@@ -18,15 +18,26 @@ class FilterController extends Controller
         return response()->json(['data' => $kmOptions]);
     }
 
-    public function getIRIKMOptions()
-    {
-        $IRIKMOptions = DB::table('spatial_iri_polygon')
-            ->select('km')
-            ->distinct()
-            ->orderBy('km')
-            ->get();
-        return response()->json(['data' => $IRIKMOptions]);
-    }
+public function getIRIKMOptions($nilai_iri = null)
+{
+    $IRIKMOptions = DB::table('spatial_iri_polygon')
+        ->select('km')
+        ->where(function ($query) use ($nilai_iri) {
+            if ($nilai_iri == 'Baik') {
+                $query->where('nilai_iri', '<', 4);
+            } elseif ($nilai_iri == 'Sedang') {
+                $query->whereBetween('nilai_iri', [4, 8]);
+            } elseif ($nilai_iri == 'Rusak Ringan') {
+                $query->whereBetween('nilai_iri', [8, 12]);
+            } elseif ($nilai_iri == 'Rusak Berat') {
+                $query->where('nilai_iri', '>', 12);
+            }
+        })
+        ->distinct()
+        ->orderBy('km')
+        ->get();
+    return response()->json(['data' => $IRIKMOptions]);
+}
 
     public function getIRIJalur()
     {
@@ -46,5 +57,15 @@ class FilterController extends Controller
             ->orderBy('bagian_jalan')
             ->get();
         return response()->json(['data' => $IRI_bagianJalan]);
+    }
+
+    public function getRuasJalan()
+    {
+        $ruasJalanTol = DB::table('jalan_tol')
+            ->select('id', 'nama')
+            ->distinct()
+            ->orderBy('id')
+            ->get();
+        return response()->json(['data' => $ruasJalanTol]);
     }
 }

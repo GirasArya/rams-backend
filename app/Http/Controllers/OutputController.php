@@ -28,6 +28,9 @@ class OutputController extends Controller
             'gorong_gorong_line' => 'getGorongGorongLine',
             'guardrail_line' => 'getGuardrailLine',
             'iri_polygon' => 'getIRIPolygon',
+            'iri_sedang' => 'getSedangIRI',
+            'iri_ringan' => 'getRusakRinganIRI',
+            'iri_berat' => 'getRusakBeratIRI',
             'jalan_line' => 'getJalanLine',
             'jembatan_point' => 'getJembatanPoint',
             'jembatan_polygon' => 'getJembatanPolygon',
@@ -363,6 +366,67 @@ class OutputController extends Controller
         ];
         return response()->json($featureCollection);
     }
+
+    public function getSedangIRI($start_km = null, $end_km = null)
+    {
+        $query = IRIPolygon::query();
+
+        $query->where('nilai_iri', '>', 4)->where('nilai_iri', '<=', 8);
+
+        $data = $query->selectRaw('*, ST_AsGeoJSON(ST_Transform(geom::geometry, 4326)) AS geojson')
+            ->get()
+            ->makeHidden('geom');
+
+        $features = GeoJSONResource::collection($data);
+
+        $featureCollection = [
+            'type' => 'FeatureCollection',
+            'features' => $features,
+        ];
+
+        return response()->json($featureCollection);
+    }
+
+    public function getRusakRinganIRI($start_km = null, $end_km = null)
+    {
+        $query = IRIPolygon::query();
+
+        $query->where('nilai_iri', '>', 8)->where('nilai_iri', '<=', 12);
+
+        $data = $query->selectRaw('*, ST_AsGeoJSON(ST_Transform(geom::geometry, 4326)) AS geojson')
+            ->get()
+            ->makeHidden('geom');
+
+        $features = GeoJSONResource::collection($data);
+
+        $featureCollection = [
+            'type' => 'FeatureCollection',
+            'features' => $features,
+        ];
+
+        return response()->json($featureCollection);
+    }
+
+    public function getRusakBeratIRI($start_km = null, $end_km = null)
+    {
+        $query = IRIPolygon::query();
+
+        $query->where('nilai_iri', '>', 12);
+
+        $data = $query->selectRaw('*, ST_AsGeoJSON(ST_Transform(geom::geometry, 4326)) AS geojson')
+            ->get()
+            ->makeHidden('geom');
+
+        $features = GeoJSONResource::collection($data);
+
+        $featureCollection = [
+            'type' => 'FeatureCollection',
+            'features' => $features,
+        ];
+
+        return response()->json($featureCollection);
+    }
+
 
     public function getJalanLine($start_km = null, $end_km = null)
     {
@@ -859,16 +923,16 @@ class OutputController extends Controller
 
     public function getSegmenLegerPolygonSelection($awal, $akhir)
     {
-        $awalan = (int) substr($awal,2);
-        $akhiran = (int) substr($akhir,2);
+        $awalan = (int) substr($awal, 2);
+        $akhiran = (int) substr($akhir, 2);
 
-            //get all leger id that starts with "M" within range
+        //get all leger id that starts with "M" within range
         $data = SegmenLegerPolygon::selectRaw("*, ST_AsGeoJSON(ST_Transform(geom::geometry, 4326)) AS geojson")
-        ->where('id_leger', 'like', 'M%')
-        ->whereBetween(DB::raw('CAST(SUBSTRING(id_leger, 3) AS INT)'), [$awalan, $akhiran])
-        ->orderBy(DB::raw('CAST(SUBSTRING(id_leger, 3) AS INT)'), 'asc')
-        ->get()->makeHidden('geom');
-        
+            ->where('id_leger', 'like', 'M%')
+            ->whereBetween(DB::raw('CAST(SUBSTRING(id_leger, 3) AS INT)'), [$awalan, $akhiran])
+            ->orderBy(DB::raw('CAST(SUBSTRING(id_leger, 3) AS INT)'), 'asc')
+            ->get()->makeHidden('geom');
+
         $features = GeoJSONResource::collection($data);
 
         $featureCollection = [
